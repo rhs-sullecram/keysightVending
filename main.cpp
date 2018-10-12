@@ -25,50 +25,53 @@ void pOutput(std::list<Result> plist){
 
     fprintf(fFile,"[\n");
     for(it1=plist.begin(); it1!=plist.end(); ++it1) {
-        fprintf(fFile,"\t{\n");
-        fprintf(fFile,"\t\t\"product_delivered\": %s,\n", it1->getDelivered() ? "true" : "false");
-        fprintf(fFile,"\t\t\"change\": [\n");
+        fprintf(fFile, "  {\n");
+        fprintf(fFile, "    \"product_delivered\": %s,\n", it1->getDelivered() ? "true" : "false");
         change = it1->getChange();
-        while (change != 0) {
-            if(change >= 100){
-                fprintf(fFile,"\t\t  100");
-                change = change - 100;
-                if(change>0)
-                    fprintf(fFile,",\n");
-                else
-                    fprintf(fFile,"\n");
+        if (change == 0)
+            fprintf(fFile, "    \"change\": []\n");
+        else {
+            fprintf(fFile, "    \"change\": [\n");
+            while (change != 0) {
+                if (change >= 100) {
+                    fprintf(fFile, "      100");
+                    change = change - 100;
+                    if (change > 0)
+                        fprintf(fFile, ",\n");
+                    else
+                        fprintf(fFile, "\n");
+                } else if (change >= 25) {
+                    fprintf(fFile, "      25");
+                    change = change - 25;
+                    if (change > 0)
+                        fprintf(fFile, ",\n");
+                    else
+                        fprintf(fFile, "\n");
+                } else if (change >= 10) {
+                    fprintf(fFile, "      10");
+                    change = change - 10;
+                    if (change > 0)
+                        fprintf(fFile, ",\n");
+                    else
+                        fprintf(fFile, "\n");
+                } else {
+                    fprintf(fFile, "     5");
+                    change = change - 5;
+                    if (change > 0)
+                        fprintf(fFile, ",\n");
+                    else
+                        fprintf(fFile, "\n");
+                }
             }
-            else if (change >= 25) {
-                fprintf(fFile,"\t\t  25");
-                change = change - 25;
-                if(change>0)
-                    fprintf(fFile,",\n");
-                else
-                    fprintf(fFile,"\n");
-            } else if (change >= 10) {
-                fprintf(fFile,"\t\t  10");
-                change = change - 10;
-                if(change>0)
-                    fprintf(fFile,",\n");
-                else
-                    fprintf(fFile,"\n");
-            } else {
-                fprintf(fFile,"\t\t 5");
-                change = change - 5;
-                if(change>0)
-                    fprintf(fFile,",\n");
-                else
-                    fprintf(fFile,"\n");
-            }
+            fprintf(fFile, "    ]\n");
         }
-        fprintf(fFile,"\t\t]\n");
-        if(size > 1){
-            fprintf(fFile,"\t},\n");
-            --size;}
-        else
-            fprintf(fFile,"\t}\n");
+            if (size > 1) {
+                fprintf(fFile, "  },\n");
+                --size;
+            } else
+                fprintf(fFile, "  }\n");
     }
-    fprintf(fFile,"]\n");
+    fprintf(fFile, "]");
     fclose(fFile);
 }
 
