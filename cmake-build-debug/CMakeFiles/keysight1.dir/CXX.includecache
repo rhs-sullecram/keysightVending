@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/Sullecram/CLionProjects/keysight1/main.cpp
+iostream
+-
+string
+-
+list
+-
+fstream
+-
+iomanip
+-
+string
+-
+vending.h
+/Users/Sullecram/CLionProjects/keysight1/vending.h
+stdio.h
+/Users/Sullecram/CLionProjects/keysight1/stdio.h
+
+/Users/Sullecram/CLionProjects/keysight1/vending.h
+iostream
+-
+string
+-
+list
+-
+

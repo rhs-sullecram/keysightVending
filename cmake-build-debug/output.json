@@ -1,0 +1,17 @@
+[
+	{
+		"product_delivered": true,
+		"change": [
+		  10,
+		  10
+		]
+	},
+	{
+		"product_delivered": false,
+		"change": [
+		  100,
+		  25,
+		  25
+		]
+	}
+]
