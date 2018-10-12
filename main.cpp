@@ -11,9 +11,7 @@
 char inLocation[100]; //= "/Users/Sullecram/CLionProjects/keysight1/files/test2.json";
 char transLocation[100];// = "/Users/Sullecram/CLionProjects/keysight1/files/test3.json";
 
-//std::string inLocation;//"/Users/Sullecram/CLionProjects/keysight1/files/test2.json";
-//std::string transLocation;//"/Users/Sullecram/CLionProjects/keysight1/files/test3.json";
-
+//Creates output file
 void pOutput(std::list<Result> plist){
     long size = plist.size();
     int change = 0;
@@ -75,10 +73,12 @@ void pOutput(std::list<Result> plist){
     fclose(fFile);
 }
 
+//Executes the transactions
 void calcResults(std::list<Product>  productL, std::list<TranNode> transL, std::list<Result> * resultL){
     std::list<Product>::iterator it1;
     std::list<TranNode>::iterator it2;
     std::list<Result>::iterator it3;
+    //Iterates through each entry, "decoding" the jsons and comparing them
     for (it2=transL.begin(); it2!=transL.end(); ++it2) { //transactions
         for(it1=productL.begin(); it1!=productL.end(); ++it1){
             int CP = (int)(it1->getPrice() * 100);
@@ -108,31 +108,27 @@ void calcResults(std::list<Product>  productL, std::list<TranNode> transL, std::
 }
 
 void getTrans(std::list<TranNode> * inlist){
-    int ID = 1;
+    int ID = 1; //Unused idea
     int count = 0;
     double funds = 0.0;
     char hold;
     char name[100];
-    //std::cout << "Getting transactions" << std::endl;
+    //std::cout << "Getting transactions" << std::endl; <- For debugging
     std::ifstream invFile;
     invFile.open(transLocation, std::ios::in);
     if (!invFile) {
         std::cerr << "Can't open input file " << transLocation << std::endl;
         exit(1);
     }
-    //while(invFile.get(hold)=='[')
-    bool again = true; //just to get the name
     char output;
     char outputL[100];
-    //char priceL[] = "'\'price'\'";
 
     if (invFile.is_open()) {
         while (!invFile.eof()) {
             invFile >> output;
             if(output!='{' && output!='[' && output!=']' && output!=':' && output!=',' && output!='\'' )
             {
-                //Get the name
-                //invFile >> output; //should be "" qoutes
+                //Search through the JSON while ignoring certain characters to get the important data
                 while(output!='{' &&  output!='}' && output!='[' && output!=']' && output!=':' && output!=',' && output!='\'')
                 {
                     if(output==' ')
@@ -141,10 +137,9 @@ void getTrans(std::list<TranNode> * inlist){
                     count++;
                     invFile >> output;
                 }
-                if(hold=='n' )//&& again==true)
+                if(hold=='n')
                 {
                     strcpy(name, outputL);
-                    again = false;
                 }
                 //For transactions
                 if(hold == 'f') { //all this to get the price up to 2 decimals
@@ -184,15 +179,12 @@ void getTrans(std::list<TranNode> * inlist){
                     }
                     //break;
                 }
-                //For inventory
-
                 hold = outputL[1];
-
-                //std::cout<<outputL<<std::endl;
                 count = 0;
                 memset(outputL, 0, 100 );
                 //break;
             }
+            //Converts the JSON to my transaction node and into a list
             if(output=='}'){
                 TranNode * node = new TranNode();
                 node->setID(ID);
@@ -210,32 +202,28 @@ void getTrans(std::list<TranNode> * inlist){
 }
 
 void receiveInv(std::list<Product> * inlist , Product* node){
-    int ID = 1;
+    int ID = 1; //Unused idea
     int count = 0;
     int quant = 0;
     double price = 0.0;
-    char hold;
+    char hold; //holds a special char to denote what I'm reading in
     char food[100];
-    //std::cout << "Getting inventory" << std::endl;
     std::ifstream invFile;
     invFile.open(inLocation, std::ios::in);
     if (!invFile) {
         std::cerr << "Can't open input file " << inLocation << std::endl;
         exit(1);
     }
-    //while(invFile.get(hold)=='[')
     bool again = true; //just to get the name
     char output;
     char outputL[100];
-    //char priceL[] = "'\'price'\'";
 
     if (invFile.is_open()) {
         while (!invFile.eof()) {
             invFile >> output;
             if(output!='{' && output!='}' && output!='[' && output!=']' && output!=':' && output!=',' && output!='\'' )
             {
-                //Get the name
-                //invFile >> output; //should be "" qoutes
+                //Search through and get the important data from inventory.json
                 while(output!='{' && output!='}' && output!='[' && output!=']' && output!=':' && output!=',' && output!='\'')
                 {
                     outputL[count] = output;
@@ -265,14 +253,10 @@ void receiveInv(std::list<Product> * inlist , Product* node){
                     break;
                 }
                 hold = outputL[1];
-
-                //std::cout<<outputL<<std::endl;
                 count = 0;
                 memset(outputL, 0, 100 );
                 //break;
             }
-
-            //std::cout<<output<<std::endl;
         }
     }
     invFile.close();
@@ -291,29 +275,14 @@ int main() {
     std::list<Product> prodList;
     std::list<TranNode> tranlist;
     std::list<Result> resultList;
+    //Read in inventory
     receiveInv(&prodList, proNode);
+    //Read in transactions
     getTrans(&tranlist);
+    //Compare the lists
     calcResults(prodList, tranlist, &resultList);
+    //Produce output.json
     pOutput(resultList);
 
-    /*std::list<Result>::iterator it1;
-    for (it1=resultList.begin(); it1!=resultList.end(); ++it1) {
-        std::cout << "Delivered: " << it1->getDelivered() << std::endl;
-        std::cout << "Change: " << it1->getChange() << std::endl;
-        std::cout << "\n" << std::endl;
-    }*/
-
-    /*std::list<TranNode>::iterator it2;
-    for (it2=tranlist.begin(); it2!=tranlist.end(); ++it2) {
-        std::cout << "Name: " << it2->getName() << std::endl;
-        std::cout << "Funds: " << it2->getFunds() << std::endl;
-        std::cout << "\n" << std::endl;
-    }*/
-
-    /*std::list<TranNode>::iterator it3;
-    std::cout << "Name: " << proNode->name << std::endl;
-    std::cout << std::setprecision(2) << "Price: " << proNode->getPrice() << std::endl;
-    std::cout << "ID: " << proNode->getID() << std::endl;
-    std::cout <<  "Quantity: " << proNode->getQuan() << std::endl;*/
     return 0;
 }
